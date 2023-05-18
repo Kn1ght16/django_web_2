@@ -4,12 +4,14 @@ NULLABLE = {'blank': True, 'null': True}
 
 
 class Category(models.Model):
+    objects = None
     name = models.CharField(max_length=255)
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
 
 class Product(models.Model):
+    objects = None
     name = models.CharField(max_length=255)
     description = models.TextField()
     image = models.ImageField(upload_to='product_images/', **NULLABLE)
