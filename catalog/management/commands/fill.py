@@ -7,7 +7,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         Category.objects.all().delete()
-        Product.objects.all().delete()
 
         category_list = [
             {"name": "Category 1", "description": "Description for category 1"},
