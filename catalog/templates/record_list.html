@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% for object in object_list %}
+        {% include 'includes/inc_record_card.html' %}
+    {% endfor %}
+{% endblock %}
