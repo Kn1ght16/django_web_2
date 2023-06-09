@@ -1,0 +1,12 @@
+{% load mediapath %}
+<div class="col-lg-4">
+    <div class="card m-2 text-center">
+        <div class="card-body">
+            <img src="{{ object.preview.url|mediapath }}" alt="Картинка" width="200" height="200"/>
+            <h2>{{ object.record_title|title }} </h2>
+            <h6> {{ object.content|slice }}</h6>
+            <h4> {{ object.date_of_creation|title }}</h4>
+            <h4> {{ object.sign_of_publication|title }}</h4>
+        </div>
+    </div>
+</div><!-- /.col-lg-4 -->

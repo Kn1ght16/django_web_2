@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load mediapath %}
+{% block content %}
+    <div class="col">
+        <div class="card">
+            <div class="card-body">
+                <table class="table">
+                    <img src="{{ object.preview.url|mediapath }}" alt="Картинка" width="200" height="200"/>
+                    <tr>
+                        <td>заголовок</td>
+                        <td>{{ object.record_title }} </td>
+                    </tr>
+                    <tr>
+                        <td>Описание</td>
+                        <td>{{ object.content }}</td>
+                    </tr>
+                    <tr>
+                        <td>дата создания</td>
+                        <td>{{ object.date_of_creation }}</td>
+                    </tr>
+                    <tr>
+                        <td>признак публикации:</td>
+                        <td>{{ object.sign_of_publication }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

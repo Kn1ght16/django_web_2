@@ -1,0 +1,12 @@
+{% load mediapath %}
+<div class="col-lg-4">
+    <div class="card m-2 text-center">
+        <div class="card-body">
+            <img src="{{ object.image.url|mediapath }}" alt="Картинка" width="200" height="200"/>
+            <h2>{{ object.name|title }} </h2>
+             <h6>{{ object.description|slice:":100" }}</h6>
+            <h4> {{ object.price_for_pickup|title }}</h4>
+            <p><a class="btn btn-secondary" href="{% url 'product' object.pk %}">Посмотреть &raquo;</a></p>
+        </div>
+    </div>
+</div><!-- /.col-lg-4 -->
