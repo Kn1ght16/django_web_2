@@ -2,7 +2,9 @@
 <div class="col-lg-4">
     <div class="card m-2 text-center">
         <div class="card-body">
-            <img src="{{ object.image.url|mediapath }}" alt="Картинка" width="200" height="200"/>
+            {% if object.image %}
+                <img src="{{ object.image.url|mediapath }}" alt="Картинка" width="200" height="200"/>
+            {% endif %}
             <h2>{{ object.name|title }} </h2>
              <h6>{{ object.description|slice:":100" }}</h6>
             <h4> {{ object.price_for_pickup|title }}</h4>

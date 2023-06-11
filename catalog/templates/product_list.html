@@ -1,8 +1,23 @@
 {% extends 'base.html' %}
 
 {% block content %}
+    <h1>Product List</h1>
+      <ul>
+    {% for product in products %}
+      <li>{{ product.title }}</li>
+    {% empty %}
+      <li>No products available</li>
+    {% endfor %}
+  </ul>
+  <a href="{% url 'product_create' %}">Create Product</a>
     {% for object in object_list %}
         {% include 'includes/inc_product_card.html' %}
-       <p><a class="btn btn-secondary" href="{% url 'product' object.id %}">Посмотреть &raquo;</a></p>яя
     {% endfor %}
+    {% for product in products %}
+    <h2>{{ product.name }}</h2>
+    <p>{{ product.description }}</p>
+    {% if product.active_version %}
+        <p>Active Version: {{ product.active_version.version_number }} - {{ product.active_version.version_name }}</p>
+    {% endif %}
+{% endfor %}
 {% endblock %}
