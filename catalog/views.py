@@ -1,7 +1,11 @@
-from django.shortcuts import render
-from .models import Product, Record
+from django.forms import formset_factory
+from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse_lazy
+
+from .models import Product, Record, Version
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView, View
 from django.http import HttpResponse
+from .forms import ProductForm, VersionFormSet, VersionForm
 
 
 class IndexView(TemplateView):
@@ -42,6 +46,67 @@ class ProductListView(ListView):
         'object_list': Product.objects.all(),
         'title': 'Все продукты'  # дополнение к статической информации
     }
+
+
+def create_product(request):
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES)
+        if form.is_valid():
+            product = form.save(commit=False)
+            product.save()
+            return redirect('product_list')
+    else:
+        form = ProductForm()
+    return render(request, 'product_create.html', {'form': form})
+
+
+def update_product(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    VersionFormSet = formset_factory(VersionForm, extra=1)
+
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES, instance=product)
+        formset = VersionFormSet(request.POST, prefix='version')
+
+        if form.is_valid() and formset.is_valid():
+            form.save()
+            for version_form in formset:
+                version = version_form.save(commit=False)
+                version.product = product
+                version.save()
+
+            return redirect('product_list')
+    else:
+        form = ProductForm(instance=product)
+        formset = VersionFormSet(prefix='version')
+
+    return render(request, 'product_update.html', {'form': form, 'formset': formset})
+
+
+def delete_product(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    if request.method == 'POST':
+        product.delete()
+        return redirect('product_list')
+    return render(request, 'product_confirm_delete.html', {'product': product})
+
+
+def product_list(request):
+    products = Product.objects.all()
+    for product in products:
+        product.active_version = Version.product.filter(product=product, is_current_version=True).first()
+    return render(request, 'product_list.html', {'products': products})
+
+
+def product_detail(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    formset = VersionFormSet(instance=product)
+    if request.method == 'POST':
+        formset = VersionFormSet(request.POST, instance=product)
+        if formset.is_valid():
+            formset.save()
+            return redirect('product_detail', pk=pk)
+    return render(request, 'product_detail.html', {'product': product, 'formset': formset})
 
 
 class RecordListView(ListView):  # выведение контекста записей из модели по ключу object_list

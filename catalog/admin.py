@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Product, Category, Record
+from .models import Product, Category, Record, Version
 
 
 @admin.register(Product)
@@ -24,3 +24,4 @@ class RecordAdmin(admin.ModelAdmin):
 # admin.site.register(Product, ProductAdmin)
 # admin.site.register(Category, CategoryAdmin)
 # admin.site.register(Record)
+admin.site.register(Version)
