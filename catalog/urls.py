@@ -1,3 +1,4 @@
+from django.contrib.auth.views import LoginView
 from django.urls import path
 from . import views
 
@@ -10,8 +11,7 @@ urlpatterns = [
     path('records/', views.RecordListView.as_view(), name='records_list'),
     path('records/<slug:slug>/', views.RecordDetailView.as_view(), name='record_detail'),
     path('record/create/', views.RecordCreateView.as_view(), name='record_create'),
-    path('record/update/<int:pk>/', views.RecordUpdateView.as_view(), name='record_update'),
-    path('record/delete/<int:pk>/', views.RecordDeleteView.as_view(), name='record_delete'),
     path('product/item/<int:pk>/', views.ProductItemView.as_view(), name='product_item'),
-    path('product/create/', views.create_product, name='product_create')
+    path('product/create/', views.create_product, name='product_create'),
+    path('login/', LoginView.as_view(template_name='users/login.html'), name='login'),
 ]
