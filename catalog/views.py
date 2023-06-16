@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.forms import formset_factory
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
@@ -23,22 +24,6 @@ class ContactView(TemplateView):
     }
 
 
-# def home(request):
-#    product_list = Product.objects.all()
-#    context = {
-#        'object_list': product_list,
-#        'title': 'Каталог',
-#    }
-#    return render(request, 'home.html', context)
-
-
-# def contacts(request):
-#    context = {
-#        'title': 'Контакты',
-#    }
-#    return render(request, 'contacts.html', context)
-
-
 class ProductListView(ListView):
     template_name = 'product_list.html'
     model = Product
@@ -48,11 +33,13 @@ class ProductListView(ListView):
     }
 
 
+@login_required(login_url='login')  # Указываем URL для перенаправления на страницу входа
 def create_product(request):
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
             product = form.save(commit=False)
+            product.user = request.user  # Привязка продукта к авторизованному пользователю
             product.save()
             return redirect('product_list')
     else:
@@ -140,16 +127,6 @@ class RecordDetailView(DetailView):
 class RecordCreateView(CreateView):
     model = Record
     fields = ('record_title', 'slug', 'content', 'preview')
-    success_url = reversed('records_list')
-
-
-class RecordUpdateView(UpdateView):
-    model = Record
-    fields = ('record_title', 'slug', 'content', 'preview')
-
-
-class RecordDeleteView(DeleteView):
-    model = Record
     success_url = reversed('records_list')
 
 
