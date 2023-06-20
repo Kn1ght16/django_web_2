@@ -33,13 +33,13 @@ class ProductListView(ListView):
     }
 
 
-@login_required(login_url='login')  # Указываем URL для перенаправления на страницу входа
+@login_required
 def create_product(request):
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
             product = form.save(commit=False)
-            product.user = request.user  # Привязка продукта к авторизованному пользователю
+            product.author = request.user  # Привязка продукта к авторизованному пользователю
             product.save()
             return redirect('product_list')
     else:
