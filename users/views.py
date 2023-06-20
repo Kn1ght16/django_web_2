@@ -3,15 +3,17 @@ import secrets
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordResetForm
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.views import PasswordResetView
+from django.template.loader import render_to_string
 from django.views.generic import CreateView, UpdateView
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMessage
 from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse, reverse_lazy
 
 from users.models import User
 from users.forms import UserRegisterForm, UserProfileForm
 from users.services.account_confirmed import account_confirmed
+
+from django_web_2 import settings
 
 
 class RegisterView(CreateView):
@@ -25,12 +27,13 @@ class RegisterView(CreateView):
 
     def form_valid(self, form):
         if form.is_valid():
-            self.object = form.save(commit=False)
+            self.object = form.save()
             self.object.is_active = False
             self.object.token = secrets.token_urlsafe(18)[:15]
-            self.object.save()
             account_confirmed(self.object)
+            self.object.save()
             self.user_token = self.object.token
+            return redirect(self.get_success_url())  # Перенаправление на страницу входа
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -65,30 +68,26 @@ def activate_user(request, token):
     return render(request, 'users/user_not_found.html')
 
 
-class PasswordResetView(PasswordResetView):
-    template_name = 'users/password_reset.html'
-    email_template_name = 'users/password_reset_email.html'
-    subject_template_name = 'users/password_reset_subject.txt'
-    success_url = reverse_lazy('users:password_reset_done')
-
-
 @login_required
 def password_reset_done(request):
-    pass_ch = secrets.token_urlsafe(18)[:9]
-    send_mail(
-        subject='Восстановление пароля',
-        message=f'Ваш новый пароль {pass_ch}',
-        recipient_list=[request.user.email]
-    )
     user = request.user
-    user.set_password(pass_ch)
+    new_password = User.objects.make_random_password()
+    user.set_password(new_password)
     user.save()
+
+    email_subject = 'Восстановление пароля'
+    email_body = f'Ваш новый пароль: {new_password}'
+    send_mail(email_subject, email_body, settings.EMAIL_HOST_USER, [user.email])
+
     return redirect(reverse('users:password_reset_done'))
 
 
 class CustomPasswordResetForm(PasswordResetForm):
-    def get_users(self, email):
-        """Override method to include only active users."""
-        active_users = User.objects.filter(email__iexact=email, is_active=True)
-        return (u for u in active_users if u.has_usable_password())
+    def send_mail(self, subject_template_name, email_template_name, context, from_email, to_email, html_email_template_name=None):
+        """
+        Отправляет сообщение с ссылкой для сброса пароля
+        """
+        subject = 'Восстановление пароля'
+        email = render_to_string(email_template_name, context)
+        send_mail(subject, email, from_email, [to_email], html_message=html_email_template_name)
 

@@ -8,7 +8,7 @@
                     <img src="{% mediapath object.image %}" alt="Картинка"  width="200" height="200"/>
                     <tr>
                         <td>Название</td>
-                        <td>{{ object.name }} </td>
+                        <td>{{ object.title }}</td>
                     </tr>
                     <tr>
                         <td>Описание</td>
@@ -24,11 +24,15 @@
                     </tr>
                     <tr>
                         <td>Дата добавления:</td>
-                        <td>{{ object.date_of_creation }}</td>
+                        <td>{{ object.created_at }}</td>
                     </tr>
                     <tr>
                         <td>Дата обновления:</td>
-                        <td>{{ object.last_modified_date }}</td>
+                        <td>{{ object.updated_at }}</td>
+                    </tr>
+                    <tr>
+                        <td>Автор:</td>
+                        <td>{{ object.author }}</td>
                     </tr>
                 </table>
             </div>
