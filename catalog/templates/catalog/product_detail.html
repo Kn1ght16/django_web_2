@@ -8,7 +8,7 @@
                     <img src="{% mediapath object.image %}" alt="Картинка"  width="200" height="200"/>
                     <tr>
                         <td>Название</td>
-                        <td>{{ object.name }}</td>
+                        <td>{{ object.title }}</td>
                     </tr>
                     <tr>
                         <td>Описание</td>
@@ -35,9 +35,6 @@
                         <td>{{ object.author }}</td>
                     </tr>
                 </table>
-                {% if edit_url %}
-                    <a href="{{ edit_url }}" class="btn btn-lg btn-block btn-outline-primary">Редактировать</a>
-                {% endif %}
             </div>
             <button type="button" class="btn btn-lg btn-block btn-outline-primary">Купить</button>
         </div>

@@ -1,7 +1,8 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms import formset_factory
 from django.shortcuts import render, get_object_or_404, redirect
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 
 from .models import Product, Record, Version
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView, View
@@ -47,11 +48,15 @@ def create_product(request):
     return render(request, 'product_create.html', {'form': form})
 
 
+@login_required
 def update_product(request, pk):
     product = get_object_or_404(Product, pk=pk)
     VersionFormSet = formset_factory(VersionForm, extra=1)
 
     if request.method == 'POST':
+        if product.author != request.user:
+            return HttpResponse('Вы не являетесь владельцем продукта')
+
         form = ProductForm(request.POST, request.FILES, instance=product)
         formset = VersionFormSet(request.POST, prefix='version')
 
@@ -70,9 +75,13 @@ def update_product(request, pk):
     return render(request, 'product_update.html', {'form': form, 'formset': formset})
 
 
+@login_required
 def delete_product(request, pk):
     product = get_object_or_404(Product, pk=pk)
     if request.method == 'POST':
+        if product.author != request.user:
+            return HttpResponse('Вы не являетесь владельцем продукта')
+
         product.delete()
         return redirect('product_list')
     return render(request, 'product_confirm_delete.html', {'product': product})
@@ -130,13 +139,17 @@ class RecordCreateView(CreateView):
     success_url = reversed('records_list')
 
 
-class ProductDetailView(DetailView):
+class ProductDetailView(LoginRequiredMixin, DetailView):
     model = Product
+    template_name = 'product_detail.html'
+    context_object_name = 'product'
 
     def get_context_data(self, **kwargs):
-        context_data = super().get_context_data(**kwargs)
-        context_data['title'] = self.get_object()
-        return context_data
+        context = super().get_context_data(**kwargs)
+        context['title'] = self.object.name
+        if self.object.author == self.request.user:
+            context['edit_url'] = reverse('product_update', kwargs={'pk': self.object.pk})
+        return context
 
 
 class ProductItemView(View):
