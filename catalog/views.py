@@ -1,21 +1,30 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.cache import cache
 from django.forms import formset_factory
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
+from django.views.decorators.cache import cache_page
 
-from .models import Product, Record, Version
+from .models import Product, Record, Version, Category
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView, View
 from django.http import HttpResponse
 from .forms import ProductForm, VersionFormSet, VersionForm
+import redis
 
 
 class IndexView(TemplateView):
     template_name = 'index.html'
-    extra_context = {
-        'title': 'Главная страница',
-        'object_list': Product.objects.all()
-    }
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        category_list = cache.get('category_list')
+        if not category_list:
+            category_list = list(Category.objects.values())
+            cache.set('category_list', category_list)
+        context['products'] = Product.objects.all()
+        context['title'] = 'Главная страница'
+        return context
 
 
 class ContactView(TemplateView):
@@ -94,6 +103,7 @@ def product_list(request):
     return render(request, 'product_list.html', {'products': products})
 
 
+@cache_page(60)
 def product_detail(request, pk):
     product = get_object_or_404(Product, pk=pk)
     formset = VersionFormSet(instance=product)

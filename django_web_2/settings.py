@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 import os
 import ssl
+import redis
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -156,3 +157,21 @@ SECURE_SSL_REDIRECT=False
 SESSION_COOKIE_SECURE=False
 CSRF_COOKIE_SECURE=False
 PASSWORD_RESET_EMAIL_TEMPLATE = 'registration/password_reset.html'
+
+CACHE_ENABLED = True
+
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://localhost:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
+
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "default"
+
+

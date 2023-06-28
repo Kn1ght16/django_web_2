@@ -10,17 +10,17 @@
 
     <div class="container">
         <div class="row">
-            {% for object in object_list %}
-            <div class="col-3">
+            {% for product in products %}
+            <div class="col-md-4">
                 <div class="card mb-4 box-shadow">
                     <div class="card-header">
-                        <h4 class="my-0 font-weight-normal">{{ object | title }}</h4>
-                        <img src="{% mediapath object.image %}" alt="Картинка"  width="200" height="200"/>
+                        <h4 class="my-0 font-weight-normal">{{ product.name }}</h4>
+                        <img src="{% mediapath product.image %}" alt="Картинка" width="200" height="200" />
                     </div>
                     <div class="card-body">
-                        <h1 class="card-title pricing-card-title">$ {{ object.price }}</h1>
+                        <h1 class="card-title pricing-card-title">$ {{ product.price }}</h1>
                         <ul class="list-unstyled mt-3 mb-4 text-start m-3">
-                            <li>{{ object.description }}</li>
+                            <li>{{ product.description }}</li>
                         </ul>
                         <button type="button" class="btn btn-lg btn-block btn-outline-primary">Купить</button>
                     </div>
@@ -54,14 +54,12 @@
                 <div class="col-6 col-md">
                     <h5>О нас</h5>
                     <ul class="list-unstyled text-small">
-                        <li><a class="text-muted" href="/contacts/">Контакты</a></li>
+                        <li><a class="text-muted" href="#">Контакты</a></li>
+                        <li><a class="text-muted" href="#">Вакансии</a></li>
+                        <li><a class="text-muted" href="#">Условия использования</a></li>
                     </ul>
                 </div>
             </div>
         </footer>
     </div>
 {% endblock %}
-
-<script src="/static/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
