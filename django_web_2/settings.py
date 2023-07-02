@@ -13,10 +13,12 @@ from pathlib import Path
 import os
 import ssl
 import redis
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+load_dotenv(BASE_DIR / '.env')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -85,8 +87,8 @@ ssl._DEFAULT_CIPHERS += ':HIGH:!DH:!aNULL'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'django_web_2',
-        'USER': 'postgres',
+        'NAME': os.getenv("NAME_POSTGRES"), #'django_web_2'
+        'USER': os.getenv('USER_POSTGRES'), #'postgres'
         'PASSWORD': os.getenv('PSQLpass'),
         'HOST': 'localhost',
         'PORT': '5432',
@@ -164,7 +166,8 @@ CACHE_ENABLED = True
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://localhost:6379/1",
+        #"LOCATION": "redis://localhost:6379/1",
+        "LOCATION": os.getenv("CACHE_LOCATION"),
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
